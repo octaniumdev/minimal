@@ -1,10 +1,11 @@
+![Remake 2v](https://user-images.githubusercontent.com/80048740/111190611-502cd180-85c8-11eb-82cb-684c6dafbb6d.png)
 # Minimal Bot
 
 Minimal is a simple, open source and easy to use Discord.JS bot which will have moderation, fun and utility commands!
 
 # Made with love by Cob:web Development and our Open source contributors:
 
-Amy Elizabeth - Lead Developer
+Amy Pearl - Lead Developer
 
 Adam Salt - Developer
 
