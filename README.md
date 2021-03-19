@@ -5,9 +5,7 @@ Minimal is a simple, open source and easy to use Discord.JS bot which will have 
 
 # Made with love by Cob:web Development and our Open source contributors:
 
-Jaiden Collins - Lead Developer
-
-Adam Salt - Developer
+Ofek Shocat - Lead Developer
 
 ## Invite the bot to your Discord: Coming soon
 
