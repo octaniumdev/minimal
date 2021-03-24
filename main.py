@@ -128,4 +128,4 @@ async def status(ctx, user: Member): # warning status of member
 async def on_message(message):
     await bot.process_commands(message) # Process the message into a command
 
-bot.run('ODIyMTcxNjI5OTMyNjQyMzU2.YFOY_w.Y3WI0uBwAWSMiV6pa72euOtsqdo') # The bot "password", this is needed to connect to the account.
+bot.run('') # The bot "password", this is needed to connect to the account.
