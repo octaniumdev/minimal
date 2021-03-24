@@ -9,7 +9,7 @@ from math import sqrt, cos, sin # import more math functions
 prefix = "m/" # Set the prefix. e.g "!sb "
 bot = commands.Bot(command_prefix=prefix) # Define what bot is
 bot.remove_command('help') # Remove the default help command from the Discord.py commands lib.
-botver = "1.0 [beta]" # Set the bot version number.
+botver = "1.0.1 [beta]" # Set the bot version number.
 functions = ['+', '-', '*', '/', 'sqrt', 'cos', 'sin'] # math functions
 
 start_time = time.time() # Starts the timer for the uptime of the bot.
@@ -34,13 +34,13 @@ async def on_ready():
 
 @bot.command() # Help command. This will give you all of the commands
 async def help(ctx):
-    await ctx.send("""Minimal | By Cob:web Development 
+    await ctx.send("""```Minimal | By Cob:web Development 
 m/help                   - Shows this message
 m/about                  - Shows the bot statistics and ping
 m/calculate              - Calculate basic math. +-/*sqrt()sin()cos()
 m/warn <memberMention>   - Warn a member
 m/unwarn <memberMention> - Unwarn a member
-m/status <memberMention> - get warning status of member""")
+m/status <memberMention> - get warning status of member```""")
 
 @bot.command() # About command. This includes; Bot latency, Bot guild number, Bot uptime, Bot version.
 async def about(ctx):
@@ -56,7 +56,7 @@ async def about(ctx):
     botuptime = str(datetime.timedelta(seconds=difference)) # Calculates the bot uptime and displays the difference.
     
     # Send all the about statistics to the user
-    await ctx.send(f'About Minimal: \n\n Ping: {latency}ms \n Uptime: {botuptime} \n Version: {botver} \n\n Minimal is serving {guilds} servers. \n This bot was created by Adam Salt \n Made with discord.py `Created by Cob:web Development:` \n https://cob-web.xyz/discord/') # Shows all the output for the about command
+    await ctx.send(f'```About Minimal: \n\n Ping: {latency}ms \n Uptime: {botuptime} \n Version: {botver} \n\n Minimal is serving {guilds} servers. \n This bot was created by Adam Salt \n Made with discord.py``` `Created by Cob:web Development:` \n https://cob-web.xyz/discord/') # Shows all the output for the about command
 
 @bot.command() # calculate command
 async def calculate(ctx, *args):
@@ -102,7 +102,7 @@ async def warn_error(ctx, user: Member):
 @commands.has_permissions(ban_members=True)
 async def unwarn(ctx, user: Member): # unwarning a member 
     role_names = map(lambda role : role.name, ctx.message.author.roles) # get user roles to a list
-    if user.permissions_in(ctx.messae.channel) == "kick":
+    if user.permissions_in(ctx.message.channel) == "kick":
         WarnMem = ctx.message.mentions[0]
         try:
             warnings[str(WarnMem.id)] -= 1
@@ -128,4 +128,4 @@ async def status(ctx, user: Member): # warning status of member
 async def on_message(message):
     await bot.process_commands(message) # Process the message into a command
 
-bot.run('') # The bot "password", this is needed to connect to the account.
+bot.run('ODIyMTcxNjI5OTMyNjQyMzU2.YFOY_w.Y3WI0uBwAWSMiV6pa72euOtsqdo') # The bot "password", this is needed to connect to the account.
