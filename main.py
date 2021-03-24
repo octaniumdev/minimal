@@ -10,10 +10,10 @@ prefix = "m/" # Set the prefix. e.g "!sb "
 bot = commands.Bot(command_prefix=prefix) # Define what bot is
 bot.remove_command('help') # Remove the default help command from the Discord.py commands lib.
 botver = "1.0 [beta]" # Set the bot version number.
+functions = ['+', '-', '*', '/', 'sqrt', 'cos', 'sin'] # math functions
 
 start_time = time.time() # Starts the timer for the uptime of the bot.
 
-functions = ['+', '-', '*', '/', 'sqrt', 'cos', 'sin'] # math functions
 
 # create bot memory structure
 if not os.path.isdir("./.botmem"): os.mkdir("./.botmem") 
@@ -81,9 +81,10 @@ async def calculate(ctx, *args):
     await ctx.send("the answer is: " + str(eval(command)))
 
 @bot.command(pass_context=True)
+@commands.has_permissions(ban_members=True)
 async def warn(ctx, user: Member): # warning a member
     role_names = map(lambda role : role.name, ctx.message.author.roles) # get user roles to a list
-    if "Moderator" in role_names:
+    if True:
         WarnMem = ctx.message.mentions[0]
         try:
             warnings[str(WarnMem.id)] += 1
@@ -93,11 +94,15 @@ async def warn(ctx, user: Member): # warning a member
         await ctx.send("user {} has {} warning(s)".format(WarnMem, warnings[str(WarnMem.id)]))
     else:
         await ctx.send("not authorised") # request isnt done by moderator -- unauthorised 
+@warn.error
+async def warn_error(ctx, user: Member):
+    await ctx.send("missing permissions")
 
 @bot.command(pass_context=True)
+@commands.has_permissions(ban_members=True)
 async def unwarn(ctx, user: Member): # unwarning a member 
     role_names = map(lambda role : role.name, ctx.message.author.roles) # get user roles to a list
-    if "Moderator" in role_names:
+    if user.permissions_in(ctx.messae.channel) == "kick":
         WarnMem = ctx.message.mentions[0]
         try:
             warnings[str(WarnMem.id)] -= 1
@@ -108,6 +113,9 @@ async def unwarn(ctx, user: Member): # unwarning a member
         await ctx.send("user {} has {} warning(s)".format(WarnMem, warnings[str(WarnMem.id)]))
     else:
         await ctx.send("not authorised") # request isnt done by moderator -- unauthorised 
+@unwarn.error
+async def unwarn_error(ctx, user: Member):
+    await ctx.send("missing permissions")
 
 @bot.command(pass_context=True) 
 async def status(ctx, user: Member): # warning status of member
