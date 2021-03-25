@@ -83,7 +83,6 @@ async def calculate(ctx, *args):
 @bot.command(pass_context=True)
 @commands.has_permissions(ban_members=True)
 async def warn(ctx, user: Member): # warning a member
-    role_names = map(lambda role : role.name, ctx.message.author.roles) # get user roles to a list
     WarnMem = ctx.message.mentions[0]
     try:
         warnings[str(WarnMem.id)] += 1
@@ -98,7 +97,6 @@ async def warn_error(ctx, user: Member):
 @bot.command(pass_context=True)
 @commands.has_permissions(ban_members=True)
 async def unwarn(ctx, user: Member): # unwarning a member 
-    role_names = map(lambda role : role.name, ctx.message.author.roles) # get user roles to a list
     WarnMem = ctx.message.mentions[0]
     try:
         warnings[str(WarnMem.id)] -= 1
