@@ -84,16 +84,13 @@ async def calculate(ctx, *args):
 @commands.has_permissions(ban_members=True)
 async def warn(ctx, user: Member): # warning a member
     role_names = map(lambda role : role.name, ctx.message.author.roles) # get user roles to a list
-    if True:
-        WarnMem = ctx.message.mentions[0]
-        try:
-            warnings[str(WarnMem.id)] += 1
-        except KeyError:
-            warnings[str(WarnMem.id)] = 1
-        open("./.botmem/warnings.json", "w+").write(json.dumps(warnings))
-        await ctx.send("user {} has {} warning(s)".format(WarnMem, warnings[str(WarnMem.id)]))
-    else:
-        await ctx.send("not authorised") # request isnt done by moderator -- unauthorised 
+    WarnMem = ctx.message.mentions[0]
+    try:
+        warnings[str(WarnMem.id)] += 1
+    except KeyError:
+        warnings[str(WarnMem.id)] = 1
+    open("./.botmem/warnings.json", "w+").write(json.dumps(warnings))
+    await ctx.send("user {} has {} warning(s)".format(WarnMem, warnings[str(WarnMem.id)]))
 @warn.error
 async def warn_error(ctx, user: Member):
     await ctx.send("missing permissions")
@@ -102,17 +99,14 @@ async def warn_error(ctx, user: Member):
 @commands.has_permissions(ban_members=True)
 async def unwarn(ctx, user: Member): # unwarning a member 
     role_names = map(lambda role : role.name, ctx.message.author.roles) # get user roles to a list
-    if user.permissions_in(ctx.messae.channel) == "kick":
-        WarnMem = ctx.message.mentions[0]
-        try:
-            warnings[str(WarnMem.id)] -= 1
-        except KeyError:
-            await ctx.send("user {} has 0 warnings".format(WarnMem))
-            return
-        open("./.botmem/warnings.json", "w+").write(json.dumps(warnings))
-        await ctx.send("user {} has {} warning(s)".format(WarnMem, warnings[str(WarnMem.id)]))
-    else:
-        await ctx.send("not authorised") # request isnt done by moderator -- unauthorised 
+    WarnMem = ctx.message.mentions[0]
+    try:
+        warnings[str(WarnMem.id)] -= 1
+    except KeyError:
+        await ctx.send("user {} has 0 warnings".format(WarnMem))
+        return
+    open("./.botmem/warnings.json", "w+").write(json.dumps(warnings))
+    await ctx.send("user {} has {} warning(s)".format(WarnMem, warnings[str(WarnMem.id)]))
 @unwarn.error
 async def unwarn_error(ctx, user: Member):
     await ctx.send("missing permissions")
