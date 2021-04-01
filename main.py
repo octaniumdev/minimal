@@ -1,6 +1,6 @@
 import discord, datetime, time, random # Imports discord.py, datetime, time and random libraries
 from discord.ext import commands # Import the extension for discord.py - discord.ext command
-from discord import Member # import discord member, used in warning
+from discord import Member, Embed # import discord member, used in warning -- import Embed to polish messages
 import json # import the json library
 import os
 
@@ -9,7 +9,7 @@ from math import sqrt, cos, sin # import more math functions
 prefix = "m/" # Set the prefix. e.g "!sb "
 bot = commands.Bot(command_prefix=prefix) # Define what bot is
 bot.remove_command('help') # Remove the default help command from the Discord.py commands lib.
-botver = "1.0 [beta]" # Set the bot version number.
+botver = "1.1 [beta]" # Set the bot version number.
 functions = ['+', '-', '*', '/', 'sqrt', 'cos', 'sin'] # math functions
 
 start_time = time.time() # Starts the timer for the uptime of the bot.
@@ -34,13 +34,14 @@ async def on_ready():
 
 @bot.command() # Help command. This will give you all of the commands
 async def help(ctx):
-    await ctx.send("""Minimal | By Cob:web Development 
-m/help                   - Shows this message
-m/about                  - Shows the bot statistics and ping
-m/calculate              - Calculate basic math. +-/*sqrt()sin()cos()
-m/warn <memberMention>   - Warn a member
-m/unwarn <memberMention> - Unwarn a member
-m/status <memberMention> - get warning status of member""")
+    e = Embed(title="help", description="help command", name="helpCommands")
+    e.add_field(name="help", value="m/help                   - Shows this message")
+    e.add_field(name="about", value="m/about                  - Shows the bot statistics and ping")
+    e.add_field(name="calculate", value="m/calculate              - Calculate basic math. +-/*sqrt()sin()cos()")
+    e.add_field(name="warn", value="m/warn <memberMention>   - Warn a member")
+    e.add_field(name="unwarn", value="m/unwarn <memberMention> - Unwarn a member")
+    e.add_field(name="status", value="m/status <memberMention> - get warning status of member""")
+    await ctx.send(embed=e)
 
 @bot.command() # About command. This includes; Bot latency, Bot guild number, Bot uptime, Bot version.
 async def about(ctx):
@@ -56,7 +57,13 @@ async def about(ctx):
     botuptime = str(datetime.timedelta(seconds=difference)) # Calculates the bot uptime and displays the difference.
     
     # Send all the about statistics to the user
-    await ctx.send(f'About Minimal: \n\n Ping: {latency}ms \n Uptime: {botuptime} \n Version: {botver} \n\n Minimal is serving {guilds} servers. \n This bot was created by Adam Salt \n Made with discord.py `Created by Cob:web Development:` \n https://cob-web.xyz/discord/') # Shows all the output for the about command
+    e = Embed(title="About", description="About and statistics\n About Minimal:", name="aboutCommand")
+    e.add_field(name="Ping", value=f"Ping: {latency}ms ")
+    e.add_field(name="Uptime", value=f"Uptime: {botuptime}")
+    e.add_field(name="Version", value=f"Version: {botver}")
+    e.add_field(name="Serving", value=f"Minimal is serving {guilds} servers")
+    e.add_field(name="Credits", value=f"This bot was created by Adam Salt \n Made with discord.py Created by Cob:web Development: \n https://cob-web.xyz/discord/'")
+    await ctx.send(embed=e) # Shows all the output for the about command
 
 @bot.command() # calculate command
 async def calculate(ctx, *args):
@@ -77,23 +84,22 @@ async def calculate(ctx, *args):
         except:
             print("syntax error")
             break
-
-    await ctx.send("the answer is: " + str(eval(command)))
+    e = Embed(title="Calculation", name="calculateCommand")
+    e.add_field(name="Answer", value=str(eval(command)))
+    await ctx.send(embed=e)
 
 @bot.command(pass_context=True)
 @commands.has_permissions(ban_members=True)
 async def warn(ctx, user: Member): # warning a member
-    role_names = map(lambda role : role.name, ctx.message.author.roles) # get user roles to a list
-    if True:
-        WarnMem = ctx.message.mentions[0]
-        try:
-            warnings[str(WarnMem.id)] += 1
-        except KeyError:
-            warnings[str(WarnMem.id)] = 1
-        open("./.botmem/warnings.json", "w+").write(json.dumps(warnings))
-        await ctx.send("user {} has {} warning(s)".format(WarnMem, warnings[str(WarnMem.id)]))
-    else:
-        await ctx.send("not authorised") # request isnt done by moderator -- unauthorised 
+    WarnMem = ctx.message.mentions[0]
+    try:
+        warnings[str(WarnMem.id)] += 1
+    except KeyError:
+        warnings[str(WarnMem.id)] = 1
+    open("./.botmem/warnings.json", "w+").write(json.dumps(warnings))
+    e = Embed(title="Warning", name="warnCommand")
+    e.add_field(name="Warn", value="User {} has {} warning(s)".format(WarnMem, warnings[str(WarnMem.id)]))
+    await ctx.send(embed=e)
 @warn.error
 async def warn_error(ctx, user: Member):
     await ctx.send("missing permissions")
@@ -101,18 +107,18 @@ async def warn_error(ctx, user: Member):
 @bot.command(pass_context=True)
 @commands.has_permissions(ban_members=True)
 async def unwarn(ctx, user: Member): # unwarning a member 
-    role_names = map(lambda role : role.name, ctx.message.author.roles) # get user roles to a list
-    if user.permissions_in(ctx.messae.channel) == "kick":
-        WarnMem = ctx.message.mentions[0]
-        try:
-            warnings[str(WarnMem.id)] -= 1
-        except KeyError:
-            await ctx.send("user {} has 0 warnings".format(WarnMem))
-            return
-        open("./.botmem/warnings.json", "w+").write(json.dumps(warnings))
-        await ctx.send("user {} has {} warning(s)".format(WarnMem, warnings[str(WarnMem.id)]))
-    else:
-        await ctx.send("not authorised") # request isnt done by moderator -- unauthorised 
+    WarnMem = ctx.message.mentions[0]
+    try:
+        warnings[str(WarnMem.id)] -= 1
+    except KeyError:
+        e = Embed(title="Unwarning", name="unwarnCommand")
+        e.add_field(name="Unwarn", value="User {} has 0 warnings".format(WarnMem))
+        await ctx.send(embed=e)
+        return
+    open("./.botmem/warnings.json", "w+").write(json.dumps(warnings))
+    e = Embed(title="Unwarning", name="unwarnCommand")
+    e.add_field(name="Unwarn", value="User {} has {} warning(s)".format(WarnMem, warnings[str(WarnMem.id)]))
+    await ctx.send(embed=e)
 @unwarn.error
 async def unwarn_error(ctx, user: Member):
     await ctx.send("missing permissions")
@@ -121,11 +127,15 @@ async def unwarn_error(ctx, user: Member):
 async def status(ctx, user: Member): # warning status of member
     WarnMem = ctx.message.mentions[0]
     try:
-        await ctx.send("user {} has {} warning(s)".format(WarnMem, warnings[str(WarnMem.id)]))
+        e = Embed(title="Status of user", description="Status", name="statusCommand")
+        e.add_field(name="Status", value="User {} has {} warning(s)".format(WarnMem, warnings[str(WarnMem.id)]))
+        await ctx.send(embed=e)
     except:
-        await ctx.send("user {} has 0 warnings".format(WarnMem))
+        e = Embed(title="Status of user", description="Status", name="statusCommand")
+        e.add_field(name="Status", value="User {} has 0 warnings".format(WarnMem))
+        await ctx.send(embed=e)
 @bot.event # When there is a message sent
 async def on_message(message):
     await bot.process_commands(message) # Process the message into a command
 
-bot.run('') # The bot "password", this is needed to connect to the account.
+bot.run('ODIyMzM3NDI4ODE5MDE3NzM5.YFQzaQ.Vecc4M2v2OqlPfufr7N7SmRt6aE') # The bot "password", this is needed to connect to the account.
