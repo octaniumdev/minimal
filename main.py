@@ -173,4 +173,4 @@ async def play(ctx, url):
 async def on_message(message):
     await bot.process_commands(message) # Process the message into a command
 
-bot.run('ODIyMzM3NDI4ODE5MDE3NzM5.YFQzaQ.u3XjZAI53Zrw8qSaA0iMXOCy0qo') # The bot "password", this is needed to connect to the account.
+bot.run('') # The bot "password", this is needed to connect to the account.
