@@ -62,7 +62,7 @@ async def about(ctx):
     e.add_field(name="Uptime", value=f"Uptime: {botuptime}")
     e.add_field(name="Version", value=f"Version: {botver}")
     e.add_field(name="Serving", value=f"Minimal is serving {guilds} servers")
-    e.add_field(name="Credits", value=f"This bot was created by Adam Salt \n Made with discord.py Created by Cob:web Development: \n https://cob-web.xyz/discord/'")
+    e.add_field(name="Credits", value=f"Made with discord.py Created by Cob:web Development: \n https://cob-web.xyz/discord/'")
     await ctx.send(embed=e) # Shows all the output for the about command
 
 @bot.command() # calculate command
@@ -134,8 +134,43 @@ async def status(ctx, user: Member): # warning status of member
         e = Embed(title="Status of user", description="Status", name="statusCommand")
         e.add_field(name="Status", value="User {} has 0 warnings".format(WarnMem))
         await ctx.send(embed=e)
+
+@bot.command(name="join")
+async def join(ctx):
+    channel = ctx.author.voice.channel
+    await channel.connect()
+
+@bot.command(name="leave") # TODO: resolve this
+async def leave(ctx):
+    channel = ctx.author.voice.channel
+    await channel.disconnect()
+
+@bot.command(pass_context=True) # TODO: cant skip, etc
+async def play(ctx, url):
+    from discord.utils import get
+    from discord import FFmpegPCMAudio
+    from youtube_dl import YoutubeDL
+
+    YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist':'True'}
+    FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+    voice = ctx.voice_client
+
+    if not voice.is_playing():
+        with YoutubeDL(YDL_OPTIONS) as ydl:
+            info = ydl.extract_info(url, download=False)
+        URL = info['formats'][0]['url']
+        
+        # info
+        e = Embed(title="Video Playing", description="", name="playCommand")
+        e.add_field(name="title", value=info["title"])
+        await ctx.send(embed=e)
+
+        voice.play(FFmpegPCMAudio(URL, **FFMPEG_OPTIONS))
+    else:
+        await ctx.send("Already playing song")
+        return
 @bot.event # When there is a message sent
 async def on_message(message):
     await bot.process_commands(message) # Process the message into a command
 
-bot.run('') # The bot "password", this is needed to connect to the account.
+bot.run('ODIyMzM3NDI4ODE5MDE3NzM5.YFQzaQ.u3XjZAI53Zrw8qSaA0iMXOCy0qo') # The bot "password", this is needed to connect to the account.
