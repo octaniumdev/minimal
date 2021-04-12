@@ -41,6 +41,9 @@ async def help(ctx):
     e.add_field(name="warn", value="m/warn <memberMention>   - Warn a member")
     e.add_field(name="unwarn", value="m/unwarn <memberMention> - Unwarn a member")
     e.add_field(name="status", value="m/status <memberMention> - get warning status of member""")
+    e.add_field(name="join", value="m/join - join the voice call you are currently in""")
+    e.add_field(name="leave", value="m/leave - leave the voice call you are currently in""")
+    e.add_field(name="play", value="m/play - play a song in the voice call you are currently in""")
     await ctx.send(embed=e)
 
 @bot.command() # About command. This includes; Bot latency, Bot guild number, Bot uptime, Bot version.
@@ -176,4 +179,4 @@ async def play(ctx, url):
 async def on_message(message):
     await bot.process_commands(message) # Process the message into a command
 
-bot.run('') # The bot "password", this is needed to connect to the account.
+bot.run('ODIyMzM3NDI4ODE5MDE3NzM5.YFQzaQ.hO5cJGBT3BRL49Wz9b7uFp95C7E') # The bot "password", this is needed to connect to the account.
