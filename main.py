@@ -140,10 +140,13 @@ async def join(ctx):
     channel = ctx.author.voice.channel
     await channel.connect()
 
-@bot.command(name="leave") # TODO: resolve this
+@bot.command(pass_context=True) # TODO: resolve this
 async def leave(ctx):
-    channel = ctx.author.voice.channel
-    await channel.disconnect()
+    try:
+        server = ctx.message.guild.voice_client
+        await server.disconnect()
+    except:
+        pass
 
 @bot.command(pass_context=True) # TODO: cant skip, etc
 async def play(ctx, url):
@@ -173,4 +176,4 @@ async def play(ctx, url):
 async def on_message(message):
     await bot.process_commands(message) # Process the message into a command
 
-bot.run('') # The bot "password", this is needed to connect to the account.
+bot.run('ODIyMzM3NDI4ODE5MDE3NzM5.YFQzaQ.komfMHNWR9jjmtOhj2rMa8almvs') # The bot "password", this is needed to connect to the account.
