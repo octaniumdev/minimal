@@ -9,7 +9,7 @@ from math import sqrt, cos, sin # import more math functions
 prefix = "m/" # Set the prefix. e.g "!sb "
 bot = commands.Bot(command_prefix=prefix) # Define what bot is
 bot.remove_command('help') # Remove the default help command from the Discord.py commands lib.
-botver = "1.2 [beta]" # Set the bot version number.
+botver = "1.2.1 [beta]" # Set the bot version number.
 functions = ['+', '-', '*', '/', 'sqrt', 'cos', 'sin'] # math functions
 
 start_time = time.time() # Starts the timer for the uptime of the bot.
@@ -95,13 +95,18 @@ async def calculate(ctx, *args):
 @commands.has_permissions(ban_members=True)
 async def warn(ctx, user: Member): # warning a member
     WarnMem = ctx.message.mentions[0]
+    serverId = ctx.message.guild.id
     try:
-        warnings[str(WarnMem.id)] += 1
+        warnings[str(serverId)]
+    except KeyError: 
+        warnings[str(serverId)] = {}
+    try:
+        warnings[str(serverId)][str(WarnMem.id)] += 1
     except KeyError:
-        warnings[str(WarnMem.id)] = 1
+        warnings[str(serverId)][str(WarnMem.id)] = 1
     open("./.botmem/warnings.json", "w+").write(json.dumps(warnings))
     e = Embed(title="Warning", name="warnCommand")
-    e.add_field(name="Warn", value="User {} has {} warning(s)".format(WarnMem, warnings[str(WarnMem.id)]))
+    e.add_field(name="Warn", value="User {} has {} warning(s)".format(WarnMem, warnings[str(serverId)][str(WarnMem.id)]))
     await ctx.send(embed=e)
 @warn.error
 async def warn_error(ctx, user: Member):
@@ -111,8 +116,11 @@ async def warn_error(ctx, user: Member):
 @commands.has_permissions(ban_members=True)
 async def unwarn(ctx, user: Member): # unwarning a member 
     WarnMem = ctx.message.mentions[0]
+    serverId = ctx.message.guild.id
+    try: warnings[str(serverId)]
+    except KeyError: warnings[str(serverId)] = {}
     try:
-        warnings[str(WarnMem.id)] -= 1
+        warnings[str(serverId)][str(WarnMem.id)] -= 1
     except KeyError:
         e = Embed(title="Unwarning", name="unwarnCommand")
         e.add_field(name="Unwarn", value="User {} has 0 warnings".format(WarnMem))
@@ -120,7 +128,7 @@ async def unwarn(ctx, user: Member): # unwarning a member
         return
     open("./.botmem/warnings.json", "w+").write(json.dumps(warnings))
     e = Embed(title="Unwarning", name="unwarnCommand")
-    e.add_field(name="Unwarn", value="User {} has {} warning(s)".format(WarnMem, warnings[str(WarnMem.id)]))
+    e.add_field(name="Unwarn", value="User {} has {} warning(s)".format(WarnMem, warnings[str(serverId)][str(WarnMem.id)]))
     await ctx.send(embed=e)
 @unwarn.error
 async def unwarn_error(ctx, user: Member):
@@ -131,7 +139,7 @@ async def status(ctx, user: Member): # warning status of member
     WarnMem = ctx.message.mentions[0]
     try:
         e = Embed(title="Status of user", description="Status", name="statusCommand")
-        e.add_field(name="Status", value="User {} has {} warning(s)".format(WarnMem, warnings[str(WarnMem.id)]))
+        e.add_field(name="Status", value="User {} has {} warning(s)".format(WarnMem, warnings[str(serverId)][str(WarnMem.id)]))
         await ctx.send(embed=e)
     except:
         e = Embed(title="Status of user", description="Status", name="statusCommand")
@@ -143,7 +151,7 @@ async def join(ctx):
     channel = ctx.author.voice.channel
     await channel.connect()
 
-@bot.command(pass_context=True) # TODO: resolve this
+@bot.command(pass_context=True)
 async def leave(ctx):
     try:
         server = ctx.message.guild.voice_client
@@ -151,7 +159,7 @@ async def leave(ctx):
     except:
         pass
 
-@bot.command(pass_context=True) # TODO: cant skip, etc
+@bot.command(pass_context=True) # TODO: skip, queues, etc
 async def play(ctx, url):
     from discord.utils import get
     from discord import FFmpegPCMAudio
