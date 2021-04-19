@@ -137,11 +137,13 @@ async def unwarn_error(ctx, user: Member):
 @bot.command(pass_context=True) 
 async def status(ctx, user: Member): # warning status of member
     WarnMem = ctx.message.mentions[0]
+    serverId = ctx.message.guild.id
     try:
+        warnings[str(serverId)]
         e = Embed(title="Status of user", description="Status", name="statusCommand")
         e.add_field(name="Status", value="User {} has {} warning(s)".format(WarnMem, warnings[str(serverId)][str(WarnMem.id)]))
         await ctx.send(embed=e)
-    except:
+    except KeyError as e:
         e = Embed(title="Status of user", description="Status", name="statusCommand")
         e.add_field(name="Status", value="User {} has 0 warnings".format(WarnMem))
         await ctx.send(embed=e)
