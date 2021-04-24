@@ -3,6 +3,7 @@ from discord.ext import commands # Import the extension for discord.py - discord
 from discord import Member, Embed # import discord member, used in warning -- import Embed to polish messages
 import json # import the json library
 import os
+import asyncio
 
 from math import sqrt, cos, sin # import more math functions
 
@@ -22,7 +23,6 @@ if open("./.botmem/warnings.json", "r").read() == "":
     warnings = {}
 else:
     warnings = json.loads(open("./.botmem/warnings.json").read())
-##############################
 
 @bot.event # When the bot first loads up
 async def on_ready():
@@ -31,6 +31,30 @@ async def on_ready():
 || | | || version {} """.format(botver))
     print('The bot has logged in as {0.user}'.format(bot)) # Say that [bot name] is logged on in the terminal
     await bot.change_presence(activity=discord.Game(name=f"m/help - {botver}")) # Change the bot activity
+
+################# QUEUE #################
+class Queue:
+    def __init__(self):
+        self._queue = asyncio.PriorityQueue()
+    
+    async def _size(self) -> int:
+        return self._queue.qsize()
+
+    async def add(self, songUrl) -> None:
+        await self._queue.put((1/self._size(), songUrl))
+        """
+        priority queue enteries are in
+        the form (priority_number, data).
+        """
+    
+    async def empty(self) -> bool:
+        return self._queue.empty() # is queue empty
+
+    async def next(self):
+        return await self._queue.get()
+
+q = Queue()
+############## /* QUEUE */ ################
 
 @bot.command() # Help command. This will give you all of the commands
 async def help(ctx):
@@ -161,7 +185,6 @@ async def leave(ctx):
     except:
         pass
 
-@bot.command(pass_context=True) # TODO: skip, queues, etc
 async def play(ctx, url):
     from discord.utils import get
     from discord import FFmpegPCMAudio
@@ -188,5 +211,13 @@ async def play(ctx, url):
 @bot.event # When there is a message sent
 async def on_message(message):
     await bot.process_commands(message) # Process the message into a command
+
+@bot.command(pass_context=True)
+async def add(ctx, url):
+    q.insert(url)
+
+@bot.command(pass_context=True)
+async def skip(ctx):
+    play(ctx, await q._queue.get())
 
 bot.run('') # The bot "password", this is needed to connect to the account.
