@@ -44,7 +44,11 @@ class Queue:
         await self._queue.put((1/self._size(), songUrl))
         """
         priority queue enteries are in
-        the form (priority_number, data).
+        the form (priority_number, data)
+        and we want that the ones that we 
+        created first would be the ones we 
+        would see first. so 1/size is the
+        score.s
         """
     
     async def empty(self) -> bool:
