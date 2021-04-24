@@ -41,7 +41,7 @@ class Queue:
         return self._queue.qsize()
 
     async def add(self, songUrl) -> None:
-        await self._queue.put((1/self._size(), songUrl))
+        await self._queue.put_nowait((1/self._size(), songUrl))
         """
         priority queue enteries are in
         the form (priority_number, data)
@@ -54,8 +54,8 @@ class Queue:
     async def empty(self) -> bool:
         return self._queue.empty() # is queue empty
 
-    async def next(self):
-        return await self._queue.get()
+    async def next(self, out):
+        out = await self._queue.get()
 
 q = Queue()
 ############## /* QUEUE */ ################
