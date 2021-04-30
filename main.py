@@ -44,7 +44,12 @@ async def help(ctx):
     e.add_field(name="status", value="m/status <memberMention> - get warning status of member""")
     e.add_field(name="join", value="m/join - join the voice call you are currently in""")
     e.add_field(name="leave", value="m/leave - leave the voice call you are currently in""")
-    e.add_field(name="play", value="m/play - play a song in the voice call you are currently in""")
+    e.add_field(name="play", value="m/play - play the queue")
+    e.add_field(name="enqueue", value="m/enqueue - enqueue a video")
+    e.add_field(name="shuffle", value="m/shuffle - shuffle your queue")
+    e.add_field(name="stop", value="m/stop - stop the queue playing")
+    e.add_field(name="skip", value="m/skip - skip current song")
+    e.add_field(name="show", value="m/show - show the music queue")
     await ctx.send(embed=e)
 
 @bot.command() # About command. This includes; Bot latency, Bot guild number, Bot uptime, Bot version.
