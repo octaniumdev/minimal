@@ -9,7 +9,7 @@ from math import sqrt, cos, sin # import more math functions
 prefix = "m/" # Set the prefix. e.g "!sb "
 bot = commands.Bot(command_prefix=prefix) # Define what bot is
 bot.remove_command('help') # Remove the default help command from the Discord.py commands lib.
-botver = "1.2.1 [beta]" # Set the bot version number.
+botver = "2.2.1 [beta]" # Set the bot version number.
 functions = ['+', '-', '*', '/', 'sqrt', 'cos', 'sin'] # math functions
 
 start_time = time.time() # Starts the timer for the uptime of the bot.
@@ -66,7 +66,7 @@ async def about(ctx):
     e.add_field(name="Uptime", value=f"Uptime: {botuptime}")
     e.add_field(name="Version", value=f"Version: {botver}")
     e.add_field(name="Serving", value=f"Minimal is serving {guilds} servers")
-    e.add_field(name="Credits", value=f"Made with discord.py Created by Cob:web Development: \n https://cob-web.xyz/discord/'")
+    e.add_field(name="Credits", value="Made with discord.py Created by Cob:web Development: \n https://cob-web.xyz/discord/'")
     await ctx.send(embed=e) # Shows all the output for the about command
 
 @bot.command() # calculate command
