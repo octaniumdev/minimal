@@ -9,7 +9,7 @@ from math import sqrt, cos, sin # import more math functions
 prefix = "m/" # Set the prefix. e.g "!sb "
 bot = commands.Bot(command_prefix=prefix) # Define what bot is
 bot.remove_command('help') # Remove the default help command from the Discord.py commands lib.
-botver = "1.2.1 [beta]" # Set the bot version number.
+botver = "2.2.1 [beta]" # Set the bot version number.
 functions = ['+', '-', '*', '/', 'sqrt', 'cos', 'sin'] # math functions
 
 start_time = time.time() # Starts the timer for the uptime of the bot.
@@ -26,6 +26,7 @@ else:
 
 @bot.event # When the bot first loads up
 async def on_ready():
+    bot.add_cog(Music(bot))
     print(""" _______
 ||  _  ||
 || | | || version {} """.format(botver))
@@ -43,7 +44,12 @@ async def help(ctx):
     e.add_field(name="status", value="m/status <memberMention> - get warning status of member""")
     e.add_field(name="join", value="m/join - join the voice call you are currently in""")
     e.add_field(name="leave", value="m/leave - leave the voice call you are currently in""")
-    e.add_field(name="play", value="m/play - play a song in the voice call you are currently in""")
+    e.add_field(name="play", value="m/play - play the queue")
+    e.add_field(name="enqueue", value="m/enqueue - enqueue a video")
+    e.add_field(name="shuffle", value="m/shuffle - shuffle your queue")
+    e.add_field(name="stop", value="m/stop - stop the queue playing")
+    e.add_field(name="skip", value="m/skip - skip current song")
+    e.add_field(name="show", value="m/show - show the music queue")
     await ctx.send(embed=e)
 
 @bot.command() # About command. This includes; Bot latency, Bot guild number, Bot uptime, Bot version.
@@ -65,7 +71,7 @@ async def about(ctx):
     e.add_field(name="Uptime", value=f"Uptime: {botuptime}")
     e.add_field(name="Version", value=f"Version: {botver}")
     e.add_field(name="Serving", value=f"Minimal is serving {guilds} servers")
-    e.add_field(name="Credits", value=f"Made with discord.py Created by Cob:web Development: \n https://cob-web.xyz/discord/'")
+    e.add_field(name="Credits", value="Made with discord.py Created by Cob:web Development: \n https://cob-web.xyz/discord/'")
     await ctx.send(embed=e) # Shows all the output for the about command
 
 @bot.command() # calculate command
@@ -148,43 +154,113 @@ async def status(ctx, user: Member): # warning status of member
         e.add_field(name="Status", value="User {} has 0 warnings".format(WarnMem))
         await ctx.send(embed=e)
 
-@bot.command(name="join")
-async def join(ctx):
-    channel = ctx.author.voice.channel
-    await channel.connect()
+class Music(commands.Cog):
+    """
+    MusicPlayer
+     - contains queue and ways to interact with it
+    """
+    def __init__(self, bot):
+        self.queue = []
+        self.stop = False
+        self.skip = False
+        self.bot = bot
 
-@bot.command(pass_context=True)
-async def leave(ctx):
-    try:
-        server = ctx.message.guild.voice_client
-        await server.disconnect()
-    except:
-        pass
+  # private
+    async def _waitForSong(self, expected_duration):
+        # wait for song to finish and 
+        # check if skip was called.
+        import asyncio
+        st = time.time()
+        while time.time() - st < expected_duration:
+            if self.skip:
+                return 
+            await asyncio.sleep(1)
+  
+  # public
+    @commands.command(name="join")
+    async def join(self, ctx):
+        channel = ctx.author.voice.channel
+        await channel.connect()
 
-@bot.command(pass_context=True) # TODO: skip, queues, etc
-async def play(ctx, url):
-    from discord.utils import get
-    from discord import FFmpegPCMAudio
-    from youtube_dl import YoutubeDL
+    @commands.command(pass_context=True)
+    async def leave(self, ctx):
+        # leave from voice channel
+        try:
+            server = ctx.message.guild.voice_client
+            await server.disconnect()
+        except:
+            pass
 
-    YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist':'True'}
-    FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
-    voice = ctx.voice_client
+    @commands.command(pass_context=True)
+    async def enqueue(self, ctx, url):
+        # enqueue a song to play
+        self.queue.append(url)
 
-    if not voice.is_playing():
-        with YoutubeDL(YDL_OPTIONS) as ydl:
-            info = ydl.extract_info(url, download=False)
-        URL = info['formats'][0]['url']
-        
-        # info
-        e = Embed(title="Video Playing", description="", name="playCommand")
-        e.add_field(name="title", value=info["title"])
-        await ctx.send(embed=e)
+    @commands.command()
+    async def shuffle(self, ctx):
+        # shuffle queue
+        random.shuffle(self.queue)
 
-        voice.play(FFmpegPCMAudio(URL, **FFMPEG_OPTIONS))
-    else:
-        await ctx.send("Already playing song")
-        return
+    @commands.command()
+    async def stop(self, ctx):
+        # stop queue from playing
+        self.stop = True
+        ctx.voice_client.stop()
+    @commands.command()
+    async def skip(self, ctx):
+        # skip a song
+        self.skip = True
+        ctx.voice_client.stop()
+
+    @commands.command()
+    async def show(self, ctx):
+        await ctx.send(str(self.queue))
+
+    @commands.command(pass_context=True)
+    async def play(self, ctx):
+        if not ctx.voice_client:
+            # if we are not connected to a
+            # voice channel, connect to
+            # the author's channel.
+            channel = ctx.author.voice.channel
+            await channel.connect()
+
+        from discord import FFmpegPCMAudio
+        from youtube_dl import YoutubeDL
+
+        YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist':'True', 'quiet':'True'}
+        FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+        voice = ctx.voice_client
+
+        if len(self.queue) == 0: # queue is empty
+            await ctx.send("you need to enqueue a video to start playing")
+        else:
+            while len(self.queue) > 0: # iterate over all queue 
+                # until it has nothing in it
+                if self.skip:
+                    # make sure we skip
+                    self.skip = False
+                    ctx.voice_client.stop()
+                    continue
+                if self.stop:
+                    # make sure we stop
+                    self.stop = False
+                    ctx.voice_client.stop()
+                    break
+
+                url = self.queue.pop(0)
+                with YoutubeDL(YDL_OPTIONS) as ydl:
+                    info = ydl.extract_info(url, download=False)
+                URL = info['formats'][0]['url']
+                
+                # info embed
+                e = Embed(title="Video Playing", description="", name="playCommand")
+                e.add_field(name="title", value=info["title"])
+                await ctx.send(embed=e)
+
+                voice.play(FFmpegPCMAudio(URL, **FFMPEG_OPTIONS))
+                await self._waitForSong(info['duration'])
+
 @bot.event # When there is a message sent
 async def on_message(message):
     await bot.process_commands(message) # Process the message into a command
