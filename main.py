@@ -9,7 +9,7 @@ from math import sqrt, cos, sin # import more math functions
 prefix = "m/" # Set the prefix. e.g "!sb "
 bot = commands.Bot(command_prefix=prefix) # Define what bot is
 bot.remove_command('help') # Remove the default help command from the Discord.py commands lib.
-botver = "2.2.1 [beta]" # Set the bot version number.
+botver = "1.3.1 [beta]" # Set the bot version number.
 functions = ['+', '-', '*', '/', 'sqrt', 'cos', 'sin'] # math functions
 
 start_time = time.time() # Starts the timer for the uptime of the bot.
