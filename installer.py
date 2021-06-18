@@ -13,13 +13,16 @@ IS_MAC = "Darwin" in pl
 
 
 def get_package_manager_command():
-    systemType = os.system()
-    switch(os.system):
-
-    if os.system("pacman"):
-        return "sudo pacman -S ffmpeg"
-    if os.system("apt") == 0:
-        return "sudo apt install ffmpeg"
+    package_managers = ["pacman", "apt", "dnf", "yum", "zypper", "snap"]
+    for pm in package_managers:
+        try:
+            if pm == "pacman":
+                return "sudo pacman -S ffmpeg"
+            else:
+                return "sudo {} install ffmpeg".format(pm)
+        except e:
+            raise OSError(
+                "Unsupported linux distro or Other Error: {}").format(e)
 
 
 def install_ffmpeg_win():
