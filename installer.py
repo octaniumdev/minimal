@@ -13,10 +13,11 @@ IS_MAC = "Darwin" in pl
 
 
 def get_package_manager_command():
-    if os.system("pacman") == 1:
-        # for arch linux look at this: https://snapcraft.io/install/ffmpeg/arch
-        raise NotImplementedError(
-            "arch linux is not supported yet to install ffmopeg with the installer.\nplease do the steps shown at https://snapcraft.io/install/ffmpeg/arch and start the installer again")
+    systemType = os.system()
+    switch(os.system):
+
+    if os.system("pacman"):
+        return "sudo pacman -S ffmpeg"
     if os.system("apt") == 0:
         return "sudo apt install ffmpeg"
 
