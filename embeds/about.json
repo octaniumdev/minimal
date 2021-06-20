@@ -1,0 +1,22 @@
+[
+    {
+        "name": "Ping",
+        "value": "f\"Ping: {latency}ms \""
+    },
+    {
+        "name": "Uptime",
+        "value": "f\"Uptime: {botuptime}\""
+    },
+    {
+        "name": "Version",
+        "value": "f\"Version: {botver}\""
+    },
+    {
+        "name": "Serving",
+        "value": "f\"Minimal is serving {guilds} servers\""
+    },
+    {
+        "name": "Credits",
+        "value": "Made with discord.py Created by Cob:web Development: \n https://cob-web.xyz/discord/'"
+    }
+]

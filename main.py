@@ -52,7 +52,7 @@ async def on_ready():
 async def help(ctx):
     e = Embed(title="help", description="help command", name="helpCommands")
     for field in json.loads(open(help_embed).read()):
-        e.add_field(name=field.name, value=field.value)
+        e.add_field(name=field[name], value=field[value])
     await ctx.send(embed=e)
 
 
@@ -76,6 +76,8 @@ async def about(ctx):
     # Send all the about statistics to the user
     e = Embed(title="About",
               description="About and statistics\n About Minimal:", name="aboutCommand")
+    for field in json.loads(open(about_embed).read()):
+        e.add_field(name=eval(field[name]), value=eval(field[value]))
     e.add_field(name="Ping", value=f"Ping: {latency}ms ")
     e.add_field(name="Uptime", value=f"Uptime: {botuptime}")
     e.add_field(name="Version", value=f"Version: {botver}")
