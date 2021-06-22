@@ -103,8 +103,10 @@ async def calculate(ctx, *args):
         try:
             float(i)
             command += i
-        except SyntaxError as e:
-            print(f"syntax error: {e}")
+        except Exception as e:
+            e = Embed(title="Error", name="error")
+            e.add_field(name="Calculation Error:", value=e)
+            ctx.send(embed=e)
             break
     e = Embed(title="Calculation", name="calculateCommand")
     e.add_field(name="Answer", value=str(eval(command)))
