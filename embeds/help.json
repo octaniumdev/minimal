@@ -21,38 +21,50 @@
     },
     {
         "name": "status",
-        "value": "m/status <memberMention> - get warning status of member"
+        "value": "m/status <memberMention> - Get warning status of member"
     },
     {
         "name": "join",
-        "value": "m/join - join the voice call you are currently in"
+        "value": "m/join - Join the voice call you are currently in"
     },
     {
         "name": "leave",
-        "value": "m/leave - leave the voice call you are currently in"
+        "value": "m/leave - Leave the voice call you are currently in"
     },
     {
         "name": "play",
-        "value": "m/play - play the queue"
+        "value": "m/play - Play the queue"
     },
     {
         "name": "queue",
-        "value": "m/queue - queue a video"
+        "value": "m/queue - Queue a video"
     },
     {
         "name": "shuffle",
-        "value": "m/shuffle - shuffle your queue"
+        "value": "m/shuffle - Shuffle your queue"
     },
     {
         "name": "stop",
-        "value": "m/stop - stop the queue playin"
+        "value": "m/stop - Stop the queue playin"
     },
     {
         "name": "skip",
-        "value": "m/skip - skip current song"
+        "value": "m/skip - Skip current song"
     },
     {
         "name": "show",
-        "value": "m/show - show the music queue"
+        "value": "m/show - Show the music queue"
+    },
+    {
+        "name": "search",
+        "value": "m/search <website (choice: [tenor, giphy])> <keyword(s)> - Search for gifs in the website specified"
+    },
+    {
+        "name": "marry",
+        "value": "m/marry <mention> - Marry someone! :wedding:"
+    },
+    {
+        "name": "slap",
+        "value": "m/slap <mention> - Slap someone! :smiling_imp:"
     }
 ]
