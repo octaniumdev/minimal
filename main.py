@@ -9,6 +9,8 @@ from discord.ext import commands
 # import discord member, used in warning -- import Embed to polish messages
 from discord import Member, Embed
 from math import sqrt, cos, sin  # import more math functions
+import requests
+import asyncio
 
 bot_warnings_file = "./.botmem/warnings.json"
 about_embed = "./embeds/about.json"
@@ -18,10 +20,14 @@ prefix = "m/"  # Set the prefix. e.g "!sb "
 bot = commands.Bot(command_prefix=prefix)  # Define what bot is
 # Remove the default help command from the Discord.py commands lib.
 bot.remove_command('help')
-botver = "1.3.1 [beta]"  # Set the bot version number.
+botver = "1.4.1 [beta]"  # Set the bot version number.
 functions = ['+', '-', '*', '/', 'sqrt', 'cos', 'sin']  # math functions
 
 start_time = time.time()  # Starts the timer for the uptime of the bot.
+
+BOT_APIKEY = "" # The bot "password", this is needed to connect to the account.
+GIPHY_APIKEY = "" # The api key to Giphy rest api.
+TENOR_APIKEY = "" # The api key to Tenor rest api.
 
 
 # create bot memory structure
@@ -39,6 +45,7 @@ else:
 @bot.event  # When the bot first loads up
 async def on_ready():
     bot.add_cog(Music(bot))
+    bot.add_cog(Fun(bot, TENOR_APIKEY, GIPHY_APIKEY))
     print(""" _______
 ||  _  ||
 || | | || version {} """.format(botver))
@@ -52,7 +59,7 @@ async def on_ready():
 async def help(ctx):
     e = Embed(title="help", description="help command", name="helpCommands")
     for field in json.loads(open(help_embed).read()):
-        e.add_field(name=field[name], value=field[value])
+        e.add_field(name=field["name"], value=field["value"])
     await ctx.send(embed=e)
 
 
@@ -77,13 +84,7 @@ async def about(ctx):
     e = Embed(title="About",
               description="About and statistics\n About Minimal:", name="aboutCommand")
     for field in json.loads(open(about_embed).read()):
-        e.add_field(name=eval(field[name]), value=eval(field[value]))
-    e.add_field(name="Ping", value=f"Ping: {latency}ms ")
-    e.add_field(name="Uptime", value=f"Uptime: {botuptime}")
-    e.add_field(name="Version", value=f"Version: {botver}")
-    e.add_field(name="Serving", value=f"Minimal is serving {guilds} servers")
-    e.add_field(name="Credits",
-                value="Made with discord.py Created by Cob:web Development: \n https://cob-web.xyz/discord/'")
+        e.add_field(name=field["name"], value=eval(field["value"]))
     await ctx.send(embed=e)  # Shows all the output for the about command
 
 
@@ -184,6 +185,55 @@ async def status(ctx, user: Member):  # warning status of member
         e.add_field(name="Status",
                     value=f"User {warn_mem} has 0 warnings")
         await ctx.send(embed=e)
+
+
+class Fun(commands.Cog):
+    def __init__(self, bot, tenor_api, giffy_api) -> None:
+        self.bot = bot
+        self.tenor_key = tenor_api
+        self.giffy_key = giffy_api
+
+   # private
+    async def tenorApi_(self, keyword, limit=1):
+      endpoint = "https://g.tenor.com/v1/search?q={}&key={}&limit={}".format(keyword, self.tenor_key, limit)
+      data = requests.get(endpoint).json()['results']
+      return data[random.randint(0, len(data) - 1)]['media'][0]['tinygif']['url']
+
+    async def giffyApi_(self, keyword, limit=1):
+        endpoint = "https://api.giphy.com/v1/gifs/search?api_key={}&q={}&limit={}&offset=0&rating=g&lang=en".format(self.giffy_key, keyword, limit)
+        data = requests.get(endpoint).json()["data"]
+        return data[random.randint(0, len(data) - 1)]["images"]["original"]["mp4"]
+
+   # public
+    @commands.command(pass_context=True)
+    async def search(self, ctx, website, keyword):
+      if website == "tenor":
+        d = await self.tenorApi_(keyword)
+      elif website == "giffy":
+        d = await self.giffyApi_(keyword)
+      await ctx.send(d)
+
+    @commands.command(name="marry")
+    async def marry(self, ctx, person2):
+        d = await self.tenorApi_("marriage anime", 10)
+        await ctx.send(d)
+        await ctx.send("{} just married {}!".format(ctx.author.mention, person2))
+
+    @commands.command()
+    async def slap(self, ctx, person2):
+        d = await self.tenorApi_("slap anime", 10)
+        await ctx.send(d)
+        await ctx.send("{} slapped {}!".format(ctx.author.mention, person2))
+
+    @commands.command()
+    async def coinflip(self, ctx):
+        r = random.randint(0, 1)
+        await ctx.send("Coinflip result is... :drum:")
+        await asyncio.sleep(0.7)
+        if r == 0:
+            await ctx.send("heads")
+        else:
+            await ctx.send("tails")
 
 
 class Music(commands.Cog):
@@ -303,4 +353,4 @@ class Music(commands.Cog):
 async def on_message(message):
     await bot.process_commands(message)  # Process the message into a command
 
-bot.run('')  # The bot "password", this is needed to connect to the account.
+bot.run(BOT_APIKEY)  # The bot "password", this is needed to connect to the account.
